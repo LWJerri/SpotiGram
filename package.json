@@ -1,7 +1,7 @@
 {
-  "name": "userbotmusic",
+  "name": "spotigram",
   "version": "1.0.0",
-  "description": "UserBotMusic is designed specifically so that the tracks of the Spotify in Telegram are automatically transferred to the Spotify.",
+  "description": "SpotiGram is designed specifically so that the tracks of the Spotify in Telegram are automatically transferred to the Spotify.",
   "main": "./dist/app.js",
   "scripts": {
     "prebuild": "rm -rf dist",
@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LWJerri/UserBotMusic.git"
+    "url": "git+https://github.com/LWJerri/SpotiGram.git"
   },
   "keywords": [],
   "author": "LWJerri (lwjerri.dev)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LWJerri/UserBotMusic/issues"
+    "url": "https://github.com/LWJerri/SpotiGram/issues"
   },
-  "homepage": "https://github.com/LWJerri/UserBotMusic#readme",
+  "homepage": "https://github.com/LWJerri/SpotiGram#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
     "humanize-duration": "^3.28.0",
