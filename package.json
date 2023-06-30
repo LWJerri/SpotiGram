@@ -1,0 +1,41 @@
+{
+  "name": "userbotmusic",
+  "version": "1.0.0",
+  "description": "UserBotMusic is designed specifically so that the tracks of the Spotify in Telegram are automatically transferred to the Spotify.",
+  "main": "./dist/app.js",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "node ./dist/app.js",
+    "dev": "tsx watch ./src/app.ts",
+    "auth": "tsc && node ./dist/auth.js"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LWJerri/UserBotMusic.git"
+  },
+  "keywords": [],
+  "author": "LWJerri (lwjerri.dev)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LWJerri/UserBotMusic/issues"
+  },
+  "homepage": "https://github.com/LWJerri/UserBotMusic#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "humanize-duration": "^3.28.0",
+    "input": "^1.0.1",
+    "telegram": "^2.17.10",
+    "tsx": "^3.12.7"
+  },
+  "devDependencies": {
+    "@types/humanize-duration": "^3.27.1",
+    "@types/node": "^20.3.2",
+    "prettier": "^2.8.8",
+    "prisma": "^4.16.1",
+    "typescript": "^5.1.6"
+  }
+}
