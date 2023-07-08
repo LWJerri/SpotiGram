@@ -27,13 +27,6 @@ export async function spotifyManager(event: NewMessageEvent, spotifyParsedIds: A
 
   let responseMessage = ["**Spotify Song Manager:**"];
 
-  responseMessage.push(`https://open.spotify.com/playlist/${SPOTIFY_PLAYLIST_ID}\n`);
-
-  const spotifyManagerAlert = await telegram.sendMessage(event.message.chatId, {
-    message: responseMessage.join("\n"),
-    parseMode: "markdown",
-  });
-
   for (let i = 0; i < spotifyParsedIds.length; i++) {
     const songId = spotifyParsedIds[i];
 
@@ -103,11 +96,12 @@ export async function spotifyManager(event: NewMessageEvent, spotifyParsedIds: A
     }
 
     responseMessage.push("");
-
-    await telegram.editMessage(event.message.chatId, {
-      message: spotifyManagerAlert.id,
-      text: responseMessage.join("\n"),
-      parseMode: "markdown",
-    });
   }
+
+  responseMessage.push(`https://open.spotify.com/playlist/${SPOTIFY_PLAYLIST_ID}\n`);
+
+  await telegram.sendMessage(event.message.chatId, {
+    message: responseMessage.join("\n"),
+    parseMode: "markdown",
+  });
 }

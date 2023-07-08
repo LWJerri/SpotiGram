@@ -29,14 +29,20 @@ async function startClient() {
     const getCurrentUser = await telegram.getMe();
     const clientId = getCurrentUser.CONSTRUCTOR_ID === 2409088552 && getCurrentUser.id.toJSNumber();
 
-    const { text: message } = event.message;
+    const { message, originalUpdate } = event;
 
-    const messageClientId =
-      event.originalUpdate.CONSTRUCTOR_ID === 522914557 &&
-      event.originalUpdate.message.peerId.className === "PeerUser" &&
-      event.originalUpdate.message.peerId.userId.toJSNumber();
+    const getMessageAuthorId =
+      originalUpdate.CONSTRUCTOR_ID === 522914557 &&
+      originalUpdate.message.peerId.className === "PeerUser" &&
+      originalUpdate.message.peerId.userId.toJSNumber();
 
-    if (clientId !== messageClientId && event.message.entities?.length) {
+    const isMessageFromClient =
+      originalUpdate.CONSTRUCTOR_ID === 522914557 &&
+      originalUpdate.message.CONSTRUCTOR_ID === 940666592 &&
+      originalUpdate.message.fromId?.className === "PeerUser" &&
+      originalUpdate.message.fromId?.userId?.toJSNumber();
+
+    if (clientId !== getMessageAuthorId && event.message.entities?.length && !Boolean(isMessageFromClient)) {
       const spotifyParsedIds =
         event.message.entities
           .filter((entity) => {
@@ -47,7 +53,7 @@ async function startClient() {
           })
           .filter((entity) => {
             if (entity.className === "MessageEntityUrl") {
-              return SPOTIFY_REGEXP.test(message.slice(entity.offset, entity.offset + entity.length));
+              return SPOTIFY_REGEXP.test(message.text.slice(entity.offset, entity.offset + entity.length));
             } else {
               return entity;
             }
@@ -56,7 +62,10 @@ async function startClient() {
             if (entity.className === "MessageEntityTextUrl") {
               return entity.url.replace(SPOTIFY_TRACK_REGEXP, "");
             } else {
-              const [spotifyURL] = message.slice(entity.offset, entity.offset + entity.length).match(SPOTIFY_REGEXP);
+              const [spotifyURL] = message.text
+                .slice(entity.offset, entity.offset + entity.length)
+                .match(SPOTIFY_REGEXP);
+
               const spotifySongId = spotifyURL.replace(SPOTIFY_TRACK_REGEXP, "");
 
               return spotifySongId;
