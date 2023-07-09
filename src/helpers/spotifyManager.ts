@@ -98,7 +98,7 @@ export async function spotifyManager(event: NewMessageEvent, spotifyParsedIds: A
     responseMessage.push("");
   }
 
-  responseMessage.push(`https://open.spotify.com/playlist/${SPOTIFY_PLAYLIST_ID}\n`);
+  responseMessage.push(`https://open.spotify.com/playlist/${SPOTIFY_PLAYLIST_ID}`);
 
   await telegram.sendMessage(event.message.chatId, {
     message: responseMessage.join("\n"),
