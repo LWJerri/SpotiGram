@@ -1,42 +1,44 @@
 # Description
 
-This is a separate function from my main **UserBot** script for handling Spotify links from other users. Links received in private messages on Telegram will be processed by the script and transferred to Spotify.
+This is a separate feature from my main **UserBot** script developed for handling Spotify links in direct messages. Links received in messages on Telegram will be processed by the script and transferred to Spotify.
 
-The script can handle multiple links in one message and is also integrated with [@OdesliBot](https://t.me/odesli_bot).
+> The script can handle multiple links in one message and is also integrated with [@OdesliBot](https://t.me/odesli_bot).
 
-## Installation
+## Installation Instructions
 
 ### Requirements
 
-- Installed Node.js >= v18.
-- Installed `pnpm`.
-- Installed Docker (Optional).
-- Basic knowledge of programming.
+- Installed [Node.js](https://nodejs.org) v16 or highter and enabled [corepack](https://nodejs.org/api/corepack.html) (Optional).
+  - Just run `corepack enable` in your cmd if you plane run script outside Docker.
+- Installed [Docker](https://www.docker.com) (Optional).
 
-### Installing
+### Installing Steps
 
-1. Visit [Spotify developers](https://developer.spotify.com/dashboard) page and click `New app`.
-2. Copy `Client ID`, and `Client secret` and add to **Redirect URIs** this URL: `https://musing.vercel.app/callback`.
-3. Clone this repository: `git clone https://github.com/LWJerri/SpotiGram.git`.
-4. Rename and set up `.env.example`.
+1. Visit the [Spotify for Developers](https://developer.spotify.com/dashboard) page and click on "New app".
+2. Copy "Client ID" & "Client secret" and add to **Redirect URIs** this URL: `https://localhost`.
+3. Clone repository: `git clone https://github.com/LWJerri/SpotiGram.git`.
+4. Rename `.env.example` to `.env` and configurate keys.
 
-- `APP_ID`, `APP_HASH` take from official [My Telegram](https://my.telegram.org). Navigate to **Your Telegram Core** > **API development tools** and take all required info.
-- To get `SESSION` you need to run `pnpm auth`, fill required fields, and copy a long token.
-- To set up `SPOTIFY_REFRESH_TOKEN` do these steps:
-  - Edit `CLIENT_ID` in this link `https://accounts.spotify.com/authorize?response_type=code&client_id=CLIENT_ID&scope=playlist-read-private+user-read-playback-state+user-read-currently-playing+user-read-recently-played+user-read-playback-state+user-modify-playback-state+playlist-modify-public+playlist-modify-private&redirect_uri=https%3A%2F%2Fmusing.vercel.app%2Fcallback` and open. After clicking on agree button you will be redirected to the page and must copy all after `?code=`.
-  - Now, open the terminal and run this command `curl -d client_id=CLIENT_ID -d client_secret=CLIENT_SECRET -d grant_type=authorization_code -d code=CODE_FROM_PREVIOUS_URL -d redirect_uri=https://musing.vercel.app/callback https://accounts.spotify.com/api/token`. You received JSON output, find the `refresh_token` field, copy the value, and save it.
-  - `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` fill from second step.
-  - Create a new playlist, copy id from URL and save it to `SPOTIFY_PLAYLIST_ID`.
+## Telegram API Credentials
 
-5. Run with `Docker` or `pnpm`:
+- Obtain your `APP_ID` and `APP_HASH` from [My Telegram](https://my.telegram.org). Go to Your **Telegram Core** > **API development tools**, copy "app_id" and "app_hash".
+- To get the `SESSION` value, run `pnpm auth`, fill in the required fields, and copy the generated token.
 
-For Docker:
+## Spotify Tokens
 
-- Run docker command `docker build -t spotigram .` and after `docker run -d spotigram`. Done, ready to usage ;)
+- Edit this link: `https://accounts.spotify.com/authorize?response_type=code&client_id=CLIENT_ID&scope=playlist-read-private+user-read-playback-state+user-read-currently-playing+user-read-recently-played+user-read-playback-state+user-modify-playback-state+playlist-modify-public+playlist-modify-private&redirect_uri=https%3A%2F%2Flocalhost` by replacing "CLIENT_ID" with your actual client ID. Open the modified link in your browser and agree to the permissions.
+- After agreeing, you will be redirected to a page. Copy the code from the URL after `?code=`.
+- In your terminal, run this command: `curl -d client_id=YOUR_CLIENT_ID -d client_secret=YOUR_CLIENT_SECRET -d grant_type=authorization_code -d code=CODE_FROM_PREVIOUS_STEP -d redirect_uri=https://localhost https://accounts.spotify.com/api/token`, and receive a JSON response. Look for the `refresh_token` field and copy its value.
+- Finally, fill in your `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` with the values from the previous steps.
+- Create a new Spotify playlist, copy its ID from the URL, and save it to `SPOTIFY_PLAYLIST_ID`.
 
-For pnpm:
+> URL: `https://open.spotify.com/playlist/0Z78i4Fm10pnQFRZ9NLdBa?si=2973a422114c44e0`, playlist id is `0Z78i4Fm10pnQFRZ9NLdBa`.
 
-- Run `pnpm build` and after `pnpm start`. Tada 🔥🔥
+5. Run with `Docker` or `Node.js`:
+
+> **For Docker:** Run command `docker build -t spotigram .` in your cmd and after `docker run -d spotigram`. Done.
+
+> For **Node.js**: Run `pnpm build` and after `pnpm start`. Tada 🔥🔥
 
 ## Contributing
 
