@@ -26,7 +26,7 @@
   "homepage": "https://github.com/LWJerri/SpotiGram#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "humanize-duration": "^3.28.0",
+    "humanize-duration": "^3.29.0",
     "input": "^1.0.1",
     "telegram": "^2.17.10",
     "tsx": "^3.12.7"
