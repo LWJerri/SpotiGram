@@ -16,7 +16,7 @@ dependencies:
     version: 1.0.1
   telegram:
     specifier: ^2.17.10
-    version: 2.18.26
+    version: 2.18.34
   tsx:
     specifier: ^3.12.7
     version: 3.12.9
@@ -742,8 +742,8 @@ packages:
     engines: {node: '>=0.8.0'}
     dev: false
 
-  /telegram@2.18.26:
-    resolution: {integrity: sha512-W05ltjndq/xj4yFG77ttaUDmm+ywJFlNV1WVYm63ptRg2UXyhkq0RZuwshvNdYLA2ic2Re9VqZpg5c9ySeDouw==}
+  /telegram@2.18.34:
+    resolution: {integrity: sha512-r8xWT7GO4AfV+jaeKnqDxcQfLeOvdDQwa7/ZfqKRo7go1jhqjt5NgKl3UFz7AtasSmDKE3cui54sPltlNDlgcQ==}
     dependencies:
       '@cryptography/aes': 0.1.1
       async-mutex: 0.3.2
