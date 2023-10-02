@@ -27,7 +27,7 @@ async function startClient() {
     if (!event.isPrivate) return;
 
     const getCurrentUser = await telegram.getMe();
-    const clientId = getCurrentUser.CONSTRUCTOR_ID === 2409088552 && getCurrentUser.id.toJSNumber();
+    const clientId = getCurrentUser.CONSTRUCTOR_ID === 2880827680 && getCurrentUser.id.toJSNumber();
 
     const { message, originalUpdate } = event;
 
