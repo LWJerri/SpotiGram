@@ -1,6 +1,6 @@
 {
   "name": "spotigram",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "SpotiGram is designed specifically so that the tracks of the Spotify in Telegram are automatically transferred to the Spotify.",
   "main": "./dist/app.js",
   "scripts": {
