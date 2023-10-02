@@ -11,7 +11,7 @@
     "auth": "tsc && node ./dist/auth.js"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">=18"
   },
   "repository": {
     "type": "git",
