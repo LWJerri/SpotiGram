@@ -24,7 +24,7 @@ dependencies:
 devDependencies:
   '@types/humanize-duration':
     specifier: ^3.27.1
-    version: 3.27.2
+    version: 3.27.3
   '@types/node':
     specifier: ^20.8.0
     version: 20.8.10
@@ -239,8 +239,8 @@ packages:
     dev: false
     optional: true
 
-  /@types/humanize-duration@3.27.2:
-    resolution: {integrity: sha512-KOGjfVAD8CHMgXL6z96f7eCNRFUENKa2BG87l7JsSg9ZA6lRFsipZ0faF4kKFqnzxirVgXmOnWqTLAKUog1h/g==}
+  /@types/humanize-duration@3.27.3:
+    resolution: {integrity: sha512-wiiiFYjnrYDJE/ujU7wS/NShqp12IKrejozjDtcejP0zYi+cjyjVcfZHwcFUDKVJ7tHGsmgeW2ED92ABIIjfpg==}
     dev: true
 
   /@types/node@20.8.10:
