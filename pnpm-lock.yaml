@@ -10,7 +10,7 @@ dependencies:
     version: 16.3.1
   humanize-duration:
     specifier: ^3.29.0
-    version: 3.30.0
+    version: 3.31.0
   input:
     specifier: ^1.0.1
     version: 1.0.1
@@ -24,7 +24,7 @@ dependencies:
 devDependencies:
   '@types/humanize-duration':
     specifier: ^3.27.1
-    version: 3.27.2
+    version: 3.27.4
   '@types/node':
     specifier: ^20.8.0
     version: 20.10.4
@@ -239,8 +239,8 @@ packages:
     dev: false
     optional: true
 
-  /@types/humanize-duration@3.27.2:
-    resolution: {integrity: sha512-KOGjfVAD8CHMgXL6z96f7eCNRFUENKa2BG87l7JsSg9ZA6lRFsipZ0faF4kKFqnzxirVgXmOnWqTLAKUog1h/g==}
+  /@types/humanize-duration@3.27.4:
+    resolution: {integrity: sha512-yaf7kan2Sq0goxpbcwTQ+8E9RP6HutFBPv74T/IA/ojcHKhuKVlk2YFYyHhWZeLvZPzzLE3aatuQB4h0iqyyUA==}
     dev: true
 
   /@types/node@20.10.4:
@@ -501,8 +501,8 @@ packages:
       entities: 2.2.0
     dev: false
 
-  /humanize-duration@3.30.0:
-    resolution: {integrity: sha512-NxpT0fhQTFuMTLnuu1Xp+ozNpYirQnbV3NlOjEKBYlE3uvMRu3LDuq8EPc3gVXxVYnchQfqVM4/+T9iwHPLLeA==}
+  /humanize-duration@3.31.0:
+    resolution: {integrity: sha512-fRrehgBG26NNZysRlTq1S+HPtDpp3u+Jzdc/d5A4cEzOD86YLAkDaJyJg8krSdCi7CJ+s7ht3fwRj8Dl+Btd0w==}
     dev: false
 
   /ieee754@1.2.1:
