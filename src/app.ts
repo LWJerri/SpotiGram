@@ -1,82 +1,70 @@
+import { filters } from "@mtcute/dispatcher";
 import "dotenv/config";
-import { TelegramClient } from "telegram";
-import { NewMessage, NewMessageEvent } from "telegram/events";
-import { StringSession } from "telegram/sessions";
-import { DEVICE_MODEL, SPOTIFY_REGEXP, SPOTIFY_TRACK_REGEXP } from "./helpers/constants";
-import { spotifyManager } from "./helpers/spotifyManager";
+import { isHaveUrlEntities, isSpotifyUrl, isViaOdesliBot } from "./filters";
+import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants";
+import { env } from "./helpers/env";
+import inlineCall from "./helpers/inlineCall";
+import saveSession from "./helpers/saveSession";
+import { Manager } from "./manager";
+import { client, dispatcher } from "./mtcute";
 
-const { APP_ID, APP_HASH, SESSION } = process.env;
+const spotifyManager = new Manager();
 
-const stringSession = new StringSession(SESSION);
+dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
+  const spotifyUrlEntity = msg.entities.find(({ params }) => params.kind === "text_link" && isSpotifyUrl(params.url));
 
-export const telegram = new TelegramClient(stringSession, parseInt(APP_ID), APP_HASH, { deviceModel: DEVICE_MODEL });
+  if (!spotifyUrlEntity || !spotifyUrlEntity.is("text_link")) return;
 
-async function startClient() {
-  await telegram.connect();
+  const [trackId] = spotifyUrlEntity.params.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
 
-  console.log("Connected to User API server!");
+  const response = await spotifyManager.process([trackId]);
 
-  const meMessage = await telegram.sendMessage("me", { message: DEVICE_MODEL });
-  await meMessage.delete();
+  await msg.replyText(response);
+});
 
-  console.log("Now, script ready to listen all actions from connected client...");
+dispatcher.onNewMessage(
+  filters.and(filters.chat("private"), filters.not(filters.me), isHaveUrlEntities),
+  async (msg) => {
+    let trackListIds = [];
 
-  telegram.addEventHandler(messageEvent, new NewMessage());
+    for (let i = 0; i < msg.urlEntities.length; i++) {
+      const inlineCallResult = await inlineCall(msg.urlEntities[i].text, ODESLI_BOT_ID);
+      const inlineResult = inlineCallResult?.results.pop();
 
-  async function messageEvent(event: NewMessageEvent) {
-    if (!event.isPrivate) return;
-
-    const getCurrentUser = await telegram.getMe();
-    const clientId = getCurrentUser.CONSTRUCTOR_ID === 2880827680 && getCurrentUser.id.toJSNumber();
-
-    const { message, originalUpdate } = event;
-
-    const getMessageAuthorId =
-      originalUpdate.CONSTRUCTOR_ID === 522914557 &&
-      originalUpdate.message.peerId.className === "PeerUser" &&
-      originalUpdate.message.peerId.userId.toJSNumber();
-
-    const isMessageFromClient =
-      originalUpdate.CONSTRUCTOR_ID === 522914557 &&
-      originalUpdate.message.CONSTRUCTOR_ID === 940666592 &&
-      originalUpdate.message.fromId?.className === "PeerUser" &&
-      originalUpdate.message.fromId?.userId?.toJSNumber();
-
-    if (clientId !== getMessageAuthorId && event.message.entities?.length && !Boolean(isMessageFromClient)) {
-      const spotifyParsedIds =
-        event.message.entities
-          .filter((entity) => {
-            const isSpotifyEntity =
-              entity.className === "MessageEntityTextUrl" && SPOTIFY_TRACK_REGEXP.test(entity.url);
-
-            return entity.className === "MessageEntityUrl" || isSpotifyEntity;
-          })
-          .filter((entity) => {
-            if (entity.className === "MessageEntityUrl") {
-              return SPOTIFY_REGEXP.test(message.text.slice(entity.offset, entity.offset + entity.length));
-            } else {
-              return entity;
-            }
-          })
-          .map((entity) => {
-            if (entity.className === "MessageEntityTextUrl") {
-              return entity.url.replace(SPOTIFY_TRACK_REGEXP, "");
-            } else {
-              const [spotifyURL] = message.text
-                .slice(entity.offset, entity.offset + entity.length)
-                .match(SPOTIFY_REGEXP);
-
-              const spotifySongId = spotifyURL.replace(SPOTIFY_TRACK_REGEXP, "");
-
-              return spotifySongId;
-            }
-          }) ?? [];
-
-      if (spotifyParsedIds.length > 0) {
-        return await spotifyManager(event, [...new Set(spotifyParsedIds)]);
+      if (inlineResult?.sendMessage._ !== "botInlineMessageText" || !inlineResult.sendMessage.entities?.length) {
+        continue;
       }
-    }
-  }
-}
 
-startClient();
+      const spotifyEntity = inlineResult.sendMessage.entities.find(
+        (entity) => entity._ === "messageEntityTextUrl" && isSpotifyUrl(entity.url),
+      );
+
+      if (spotifyEntity?._ !== "messageEntityTextUrl") return;
+
+      const [trackId] = spotifyEntity.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
+
+      trackListIds.push(trackId);
+    }
+
+    if (!trackListIds.length) return;
+
+    const response = await spotifyManager.process([...new Set(trackListIds)]);
+
+    await msg.replyText(response);
+  },
+);
+
+client.run({ session: env.TG_SESSION }, async () => {
+  console.log("🚀 SpotiGram ready to use");
+
+  if (env.SAVE_SESSION) return await saveSession();
+});
+
+dispatcher.onError(async (error, update, state) => {
+  console.error("⚠️ Dispatcher error:", error, update.data);
+
+  return true;
+});
+
+process.on("uncaughtException", (err) => console.error(err));
+process.on("unhandledRejection", (err) => console.error(err));
