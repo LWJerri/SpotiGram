@@ -1,4 +1,4 @@
-import { filters } from "@mtcute/dispatcher";
+import { UpdateState, filters } from "@mtcute/dispatcher";
 import "dotenv/config";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { orm } from "./database";
@@ -26,10 +26,12 @@ dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters
 
 dispatcher.onNewMessage(
   filters.and(filters.chat("private"), filters.not(filters.me), isHaveUrlEntities),
-  async (msg) => {
+  async (msg, state: UpdateState<{}>) => {
     let trackListIds = [];
 
     for (let i = 0; i < msg.urlEntities.length; i++) {
+      await state.throttle("inlineCallsCycle", 5, 10);
+
       const inlineCallResult = await inlineCall(msg.urlEntities[i].text, ODESLI_BOT_ID);
       const inlineResult = inlineCallResult?.results.pop();
 
