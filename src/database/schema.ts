@@ -7,5 +7,5 @@ export const playlists = pgTable("playlists", {
 
 export const tracks = pgTable("tracks", {
   id: text("id").primaryKey(),
-  addedAt: date("addedAt").notNull(),
+  addedAt: date("addedAt"),
 });
