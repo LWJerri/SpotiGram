@@ -1,5 +1,7 @@
 import { filters } from "@mtcute/dispatcher";
 import "dotenv/config";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { orm } from "./database";
 import { isHaveUrlEntities, isSpotifyUrl, isViaOdesliBot } from "./filters";
 import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants";
 import { env } from "./helpers/env";
@@ -55,9 +57,11 @@ dispatcher.onNewMessage(
 );
 
 client.run({ session: env.TG_SESSION }, async () => {
-  console.log("🚀 SpotiGram ready to use");
+  await migrate(orm, { migrationsFolder: "./drizzle" });
 
   if (env.SAVE_SESSION) return await saveSession();
+
+  console.log("🚀 SpotiGram ready to use");
 });
 
 dispatcher.onError(async (error, update, state) => {

@@ -16,6 +16,7 @@ export const env = await customCleanEnv(
     SPOTIFY_REFRESH_TOKEN: str(),
     SPOTIFY_REDIRECT_URL: url(),
     SPOTIFY_PLAYLIST_ID: alphanum(),
+    SUPABASE_DB_URL: alphanum(),
   },
   async (env) => {
     const SPOTIFY_TOKEN_KEY: keyof typeof env = "SPOTIFY_REFRESH_TOKEN";
