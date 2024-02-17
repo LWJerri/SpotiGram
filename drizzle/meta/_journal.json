@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1708136469679,
+      "tag": "0000_good_shinko_yamashiro",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1708136791543,
+      "tag": "0001_amazing_thundra",
+      "breakpoints": true
+    }
+  ]
+}
