@@ -15,6 +15,13 @@
       "when": 1708136791543,
       "tag": "0001_amazing_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708143666027,
+      "tag": "0002_superb_azazel",
+      "breakpoints": true
     }
   ]
 }
