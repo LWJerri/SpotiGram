@@ -1,4 +1,5 @@
-import { tl, toInputUser } from "@mtcute/node";
+import { tl } from "@mtcute/node";
+import { toInputUser } from "@mtcute/node/utils.js";
 import { client } from "../mtcute";
 
 export default async function inlineCall(query: string, botId: string | number, offset: string = "") {
@@ -16,6 +17,7 @@ export default async function inlineCall(query: string, botId: string | number, 
     return call;
   } catch (err) {
     console.error("Can't make inline call", err);
+
     return null;
   }
 }
