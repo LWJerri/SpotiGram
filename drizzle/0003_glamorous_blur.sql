@@ -1,1 +1,0 @@
-ALTER TABLE "tracks" ALTER COLUMN "addedAt" DROP NOT NULL;
