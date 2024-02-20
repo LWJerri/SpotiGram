@@ -3,24 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Playlist {
-  id         String  @id
+  id         String @id @unique
   snapshotId String
-  track      Track[]
 
   @@map("playlists")
 }
 
 model Track {
-  id         String    @id
-  addedAt    DateTime? @default(now())
-  playlistId String
-  playlist   Playlist  @relation(fields: [playlistId], references: [id])
+  id      String    @id @default(cuid())
+  trackId String
+  addedAt DateTime? @default(now())
+  name    String
 
   @@map("tracks")
 }

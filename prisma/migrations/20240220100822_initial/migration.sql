@@ -11,10 +11,10 @@ CREATE TABLE "tracks" (
     "id" TEXT NOT NULL,
     "trackId" TEXT NOT NULL,
     "addedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "playlistId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
 
     CONSTRAINT "tracks_pkey" PRIMARY KEY ("id")
 );
 
--- AddForeignKey
-ALTER TABLE "tracks" ADD CONSTRAINT "tracks_playlistId_fkey" FOREIGN KEY ("playlistId") REFERENCES "playlists"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "playlists_id_key" ON "playlists"("id");
