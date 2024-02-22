@@ -39,7 +39,7 @@ dispatcher.onNewMessage(
         (entity) => entity._ === "messageEntityTextUrl" && isSpotifyUrl(entity.url),
       );
 
-      if (spotifyEntity?._ !== "messageEntityTextUrl") return;
+      if (spotifyEntity?._ !== "messageEntityTextUrl") continue;
 
       const [trackId] = spotifyEntity.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
 
