@@ -25,7 +25,9 @@ schedule("0 * * * *", async () => await spotifyManager.synchronize());
 schedule("*/5 * * * *", async () => await processQueue(spotifyManager));
 
 client.run({ session: env.TG_SESSION }, async () => {
-  if (env.SAVE_SESSION) return await saveSession();
+  if (env.SAVE_SESSION) {
+    await saveSession();
+  }
 
   await spotifyManager.synchronize();
 
