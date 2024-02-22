@@ -1,3 +1,3 @@
-export * from "./isHaveUrlEntities";
-export * from "./isSpotifyUrl";
-export * from "./isViaOdesliBot";
+export * from "./isHaveUrlEntities.js";
+export * from "./isSpotifyUrl.js";
+export * from "./isViaOdesliBot.js";
