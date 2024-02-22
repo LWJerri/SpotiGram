@@ -1,14 +1,15 @@
 {
   "name": "spotigram",
-  "version": "1.1.1",
-  "description": "SpotiGram is designed specifically so that the tracks of the Spotify in Telegram are automatically transferred to the Spotify.",
+  "version": "2.0.0",
+  "description": "",
   "main": "./dist/app.js",
+  "type": "module",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "tsc",
+    "build": "pkgroll",
+    "prestart": "pnpm prisma migrate deploy",
     "start": "node ./dist/app.js",
-    "dev": "tsx watch ./src/app.ts",
-    "auth": "tsc && node ./dist/auth.js"
+    "dev": "tsx watch ./src/app.ts"
   },
   "engines": {
     "node": ">=18"
@@ -25,16 +26,26 @@
   },
   "homepage": "https://github.com/LWJerri/SpotiGram#readme",
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "humanize-duration": "^3.29.0",
-    "input": "^1.0.1",
-    "telegram": "^2.19.2",
-    "tsx": "^4.1.0"
+    "@mtcute/core": "^0.7.0",
+    "@mtcute/crypto-node": "^0.7.0",
+    "@mtcute/dispatcher": "^0.7.0",
+    "@mtcute/node": "^0.7.0",
+    "@prisma/client": "^5.9.1",
+    "@soundify/web-api": "1.0.0",
+    "dotenv": "^16.4.2",
+    "envalid": "^8.0.0",
+    "node-cron": "^3.0.3",
+    "postgres": "^3.4.3"
   },
   "devDependencies": {
-    "@types/humanize-duration": "^3.27.1",
-    "@types/node": "^20.8.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.1.6"
+    "@types/node": "^20.11.16",
+    "@types/node-cron": "^3.0.11",
+    "fastify": "^4.26.1",
+    "open": "^10.0.3",
+    "pkgroll": "^2.0.1",
+    "prettier": "^3.2.5",
+    "prisma": "^5.9.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
   }
 }
