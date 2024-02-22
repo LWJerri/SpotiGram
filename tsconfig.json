@@ -2,18 +2,18 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "target": "ESNext",
-    "module": "commonjs",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "inlineSourceMap": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "declaration": true,
+    "strict": true,
     "typeRoots": ["node_modules/@types"]
   },
-
   "include": ["./src"],
   "exclude": ["node_modules"]
 }

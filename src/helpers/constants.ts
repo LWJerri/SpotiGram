@@ -1,7 +1,6 @@
-const SPOTIFY_API_URL = "https://api.spotify.com/v1";
-const DEVICE_MODEL = "User API";
+const SPOTIFY_URL_REGEXP = /https?:\/\/open.spotify.com\/(track)\/[a-zA-Z0-9]+/;
+const SPOTIFY_TRACK_ID_REGEXP = /[^/]+$/;
+const ODESLI_BOT_ID = 899433974;
+const SPECIAL_EMPTY_SYMBOL = "⠀";
 
-const SPOTIFY_REGEXP = /https?:\/\/open\.spotify\.com\/track\/[a-zA-Z0-9]+/;
-const SPOTIFY_TRACK_REGEXP = /https?:\/\/open\.spotify\.com\/track\//;
-
-export { DEVICE_MODEL, SPOTIFY_API_URL, SPOTIFY_REGEXP, SPOTIFY_TRACK_REGEXP };
+export { ODESLI_BOT_ID, SPECIAL_EMPTY_SYMBOL, SPOTIFY_TRACK_ID_REGEXP, SPOTIFY_URL_REGEXP };

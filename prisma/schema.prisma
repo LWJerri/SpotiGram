@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Playlist {
+  id         String @id @unique
+  snapshotId String
+
+  @@map("playlists")
+}
+
+model Track {
+  id      String    @id @default(cuid())
+  trackId String
+  addedAt DateTime? @default(now())
+  name    String
+
+  @@map("tracks")
+}
+
+model TrackQueue {
+  id       String   @id @default(cuid())
+  trackUri String   @unique
+  addedAt  DateTime @default(now())
+
+  @@map("tracks_queue")
+}
