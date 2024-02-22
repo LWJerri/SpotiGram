@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   "@mtcute/core":
-    specifier: ^0.7.1
-    version: 0.7.1
+    specifier: ^0.7.2
+    version: 0.7.2
   "@mtcute/crypto-node":
     specifier: ^0.7.0
     version: 0.7.0
@@ -549,14 +549,14 @@ packages:
       { integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg== }
     dev: true
 
-  /@mtcute/core@0.7.1:
+  /@mtcute/core@0.7.2:
     resolution:
-      { integrity: sha512-+VAQlCPyx6FZb37332VViV00Mlt8oO3cBdQTi1efZhrN2V25/+Zhd+aGWUw45PDqRXG3+MUt2OuQVH6+cfIK6w== }
+      { integrity: sha512-2dG/X+5jgZH1JEb2GSk8RkvDd0I3G9Tzqk6n/XAwLakvfnP+glJlqtvoUUSW+sS3v1rtneG01xZnyJ6pt3HfkQ== }
     dependencies:
       "@mtcute/file-id": 0.7.0
       "@mtcute/tl": 174.0.0
       "@mtcute/tl-runtime": 0.7.0
-      "@mtcute/wasm": 0.7.0
+      "@mtcute/wasm": 0.7.2
       "@types/events": 3.0.0
       events: 3.2.0
       long: 5.2.3
@@ -567,7 +567,7 @@ packages:
       { integrity: sha512-F+KsPdDAiA99J8CfXZ7jnwUHn4fnu6lTO6j3RXRK51EVymDWz025XA/pJYqE0A8WTY6mYiZkLewIuXZxgxU6IQ== }
     requiresBuild: true
     dependencies:
-      "@mtcute/core": 0.7.1
+      "@mtcute/core": 0.7.2
     dev: false
 
   /@mtcute/dispatcher@0.7.0:
@@ -579,7 +579,7 @@ packages:
       "@mtcute/sqlite":
         optional: true
     dependencies:
-      "@mtcute/core": 0.7.1
+      "@mtcute/core": 0.7.2
       events: 3.2.0
     dev: false
 
@@ -610,7 +610,7 @@ packages:
     resolution:
       { integrity: sha512-UaGyGcCrvE9bOUnasJoaW2Lp//jOwZM3ZoNFZZ9lMrosskvPYBpcUtCEYwdST9f5t1KSrr6lvJpP77bsqNxeGg== }
     dependencies:
-      "@mtcute/core": 0.7.1
+      "@mtcute/core": 0.7.2
       "@mtcute/html-parser": 0.7.0
       "@mtcute/markdown-parser": 0.7.0
       "@mtcute/sqlite": 0.7.0
@@ -620,7 +620,7 @@ packages:
     resolution:
       { integrity: sha512-PkJSmLGSmxT2V4RL+91Yaepfzs5HjrdQnp3SsNYav0HxnsnAaUikcvVdRU35wtzaxkPoyLGrAAbCtNQIru68xw== }
     dependencies:
-      "@mtcute/core": 0.7.1
+      "@mtcute/core": 0.7.2
       "@mtcute/tl": 174.0.0
       "@mtcute/tl-runtime": 0.7.0
       better-sqlite3: 9.2.2
@@ -640,9 +640,9 @@ packages:
       long: 5.2.3
     dev: false
 
-  /@mtcute/wasm@0.7.0:
+  /@mtcute/wasm@0.7.2:
     resolution:
-      { integrity: sha512-lt6mzVrazhyO948Ln15bFewcDYvRyBmCaE96a17kFAcRsTCc1ygxn7Ar/PVUbNLB+r7APtYdlGYDnZ4PzZjoYQ== }
+      { integrity: sha512-kynHtsb+wkcVRwDd76rC3Xg7LpFy9oeYtCjn5K7srbDLv/QI1LS8K5AJk1AvQ17dyGcu5m5HrGTFDCviEiWiHA== }
     dev: false
 
   /@prisma/client@5.10.2(prisma@5.10.2):
