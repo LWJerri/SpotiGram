@@ -22,3 +22,11 @@ model Track {
 
   @@map("tracks")
 }
+
+model TrackQueue {
+  id       String   @id @default(cuid())
+  trackUri String
+  addedAt  DateTime @default(now())
+
+  @@map("tracks_queue")
+}
