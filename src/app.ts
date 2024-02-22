@@ -1,13 +1,13 @@
 import { UpdateState, filters } from "@mtcute/dispatcher";
 import "dotenv/config";
 import { schedule } from "node-cron";
-import { odesli, urlLinks } from "./dispatchers";
-import { isHaveUrlEntities, isViaOdesliBot } from "./filters";
-import { env } from "./helpers/env";
-import saveSession from "./helpers/saveSession";
-import { SpotifyManager } from "./manager";
-import { client, dispatcher } from "./mtcute";
-import { processQueue } from "./schedulers";
+import { odesli, urlLinks } from "./dispatchers/index.js";
+import { isHaveUrlEntities, isViaOdesliBot } from "./filters/index.js";
+import { env } from "./helpers/env.js";
+import saveSession from "./helpers/saveSession.js";
+import { SpotifyManager } from "./manager.js";
+import { client, dispatcher } from "./mtcute/index.js";
+import { processQueue } from "./schedulers/index.js";
 
 const spotifyManager = new SpotifyManager();
 
@@ -24,13 +24,17 @@ dispatcher.onNewMessage(
 schedule("0 * * * *", async () => await spotifyManager.synchronize());
 schedule("*/5 * * * *", async () => await processQueue(spotifyManager));
 
-client.run({ session: env.TG_SESSION }, async () => {
-  if (env.SAVE_SESSION) {
+if (env.SAVE_SESSION) {
+  try {
     await saveSession();
+  } catch (err) {
+    console.error("Can't save session string.", err);
   }
+}
 
-  await spotifyManager.synchronize();
+await spotifyManager.synchronize();
 
+client.run({ session: env.TG_SESSION }, async () => {
   console.log("🚀 SpotiGram ready to use");
 });
 

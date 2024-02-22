@@ -5,6 +5,7 @@ import {
   SpotifyError,
   addItemToPlaybackQueue,
   addItemToPlaylist,
+  getCurrentUser,
   getPlaylist,
   getPlaylistTracks,
   getTrack,
@@ -12,23 +13,23 @@ import {
 } from "@soundify/web-api";
 import { PageIterator } from "@soundify/web-api/pagination";
 import { randomUUID } from "crypto";
-import { SPECIAL_EMPTY_SYMBOL } from "./helpers/constants";
-import { env } from "./helpers/env";
-import { prisma } from "./helpers/prisma";
-import refresher from "./helpers/refresher";
-import { client } from "./mtcute";
+import { SPECIAL_EMPTY_SYMBOL } from "./helpers/constants.js";
+import { env } from "./helpers/env.js";
+import { prisma } from "./helpers/prisma.js";
+import refresher from "./helpers/refresher.js";
+import { client } from "./mtcute/index.js";
 
 export class SpotifyManager {
   private spotify = new SpotifyClient(randomUUID(), { waitForRateLimit: true, refresher });
   private response = ["**SpotiGram ⭐**", SPECIAL_EMPTY_SYMBOL];
 
   async synchronize() {
-    const [databasePlaylist, { snapshot_id: snapshotId }] = await Promise.all([
+    const [databasePlaylist, spotifyPlaylist] = await Promise.all([
       prisma.playlist.findUnique({ where: { id: env.SPOTIFY_PLAYLIST_ID } }),
       getPlaylist(this.spotify, env.SPOTIFY_PLAYLIST_ID),
     ]);
 
-    if (databasePlaylist?.snapshotId === snapshotId) return;
+    if (databasePlaylist?.snapshotId === spotifyPlaylist?.snapshot_id) return;
 
     const playlistTracksIterator = new PageIterator((offset) =>
       getPlaylistTracks(this.spotify, env.SPOTIFY_PLAYLIST_ID, { limit: 50, offset }),
@@ -39,6 +40,8 @@ export class SpotifyManager {
     const preparedTracksList: Prisma.TrackCreateManyInput[] = playlistTracksList.map(({ added_at, track }) => {
       return { trackId: track.id, addedAt: added_at, name: track.name };
     });
+
+    const { snapshot_id: snapshotId } = spotifyPlaylist;
 
     await prisma.$transaction([
       prisma.playlist.upsert({
@@ -58,17 +61,16 @@ export class SpotifyManager {
   async process(trackIds: string[], chatId: string | number) {
     const message = await client.sendText(chatId, md(this.response.join("\n")));
 
-    for (let i = 0; i < trackIds.length; i++) {
-      const trackId = trackIds[i];
-
-      const [track, isTrackAlreadyInQueue] = await Promise.all([
+    for (const trackId of trackIds) {
+      const [track, isTrackAlreadyInQueue, isClientPremium] = await Promise.all([
         this.getTrackById(trackId),
         this.isTrackInQueue(trackId),
+        this.isClientPremium(),
       ]);
 
-      this.response.push(`**${i + 1}. ${track.name}**`);
+      this.response.push(`**${track.name}**`);
 
-      if (!track.exists) {
+      if (!track.existsInDatabase) {
         await this.addTrackToPlaylist(trackId, track.name);
       } else {
         this.response.push(` ▹ already in playlist.`);
@@ -76,7 +78,9 @@ export class SpotifyManager {
 
       if (isTrackAlreadyInQueue) {
         this.response.push(` ▹ already in queue.`);
-      } else if (env.IS_SPOTIFY_PREMIUM) {
+      }
+
+      if (isClientPremium) {
         const trackUri = `spotify:track:${trackId}`;
 
         await this.addTrackToQueue(trackUri);
@@ -92,26 +96,32 @@ export class SpotifyManager {
     return await client.editMessage({ message, text: md(this.response.join("\n")) });
   }
 
+  private async isClientPremium() {
+    const { product } = await getCurrentUser(this.spotify);
+
+    return product === "premium";
+  }
+
   private async getTrackById(trackId: string) {
-    let response: { name: string; exists: boolean };
+    let response: { name: string; existsInDatabase: boolean };
 
     const findTrack = await prisma.track.findFirst({ where: { trackId } });
 
     if (findTrack) {
-      response = { name: findTrack.name, exists: true };
+      response = { name: findTrack.name, existsInDatabase: true };
     } else {
       const { name } = await getTrack(this.spotify, trackId);
 
-      response = { name, exists: false };
+      response = { name, existsInDatabase: false };
     }
 
     return response;
   }
 
   private async isTrackInQueue(trackId: string) {
-    const queue = await getUserQueue(this.spotify);
+    const { currently_playing, queue } = await getUserQueue(this.spotify);
 
-    return queue.currently_playing?.id === trackId || queue.queue.find(({ id }) => trackId === id);
+    return currently_playing?.id === trackId || queue.find(({ id }) => trackId === id);
   }
 
   private async addTrackToQueue(trackUri: string) {

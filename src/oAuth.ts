@@ -2,8 +2,7 @@ import { randomUUID } from "crypto";
 import Fastify from "fastify";
 import open from "open";
 import { exit, stdout } from "process";
-import basicAuthHeader from "./helpers/basicAuthHeader";
-import { FastifyQuery } from "./interfaces";
+import basicAuthHeader from "./helpers/basicAuthHeader.js";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } = process.env;
 
@@ -25,7 +24,9 @@ const openUrlQuery = new URLSearchParams({
 
 const app = Fastify();
 
-app.get<FastifyQuery>("/", async (req, res) => {
+app.get<{
+  Querystring?: { code?: string; state?: string; error?: string };
+}>("/", async (req, res) => {
   if (req.query?.error) {
     await res.code(400).send(`Some error happens: ${req.query.error}.`);
 

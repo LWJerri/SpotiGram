@@ -1,1 +1,1 @@
-export * from "./CustomMessage";
+export * from "./CustomMessage.js";
