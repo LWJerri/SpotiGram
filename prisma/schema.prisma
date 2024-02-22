@@ -25,7 +25,7 @@ model Track {
 
 model TrackQueue {
   id       String   @id @default(cuid())
-  trackUri String
+  trackUri String   @unique
   addedAt  DateTime @default(now())
 
   @@map("tracks_queue")

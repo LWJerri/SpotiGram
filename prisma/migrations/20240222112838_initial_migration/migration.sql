@@ -16,5 +16,17 @@ CREATE TABLE "tracks" (
     CONSTRAINT "tracks_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tracks_queue" (
+    "id" TEXT NOT NULL,
+    "trackUri" TEXT NOT NULL,
+    "addedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "tracks_queue_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "playlists_id_key" ON "playlists"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tracks_queue_trackUri_key" ON "tracks_queue"("trackUri");
