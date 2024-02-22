@@ -1,2 +1,2 @@
-export * from "./odesli";
-export * from "./urlLinks";
+export * from "./odesli.js";
+export * from "./urlLinks.js";
