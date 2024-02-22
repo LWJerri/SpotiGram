@@ -5,10 +5,10 @@ import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants";
 import { env } from "./helpers/env";
 import inlineCall from "./helpers/inlineCall";
 import saveSession from "./helpers/saveSession";
-import { Manager } from "./manager";
+import { SpotifyManager } from "./manager";
 import { client, dispatcher } from "./mtcute";
 
-const spotifyManager = new Manager();
+const spotifyManager = new SpotifyManager();
 
 dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
   const spotifyUrlEntity = msg.entities.find(({ params }) => params.kind === "text_link" && isSpotifyUrl(params.url));
@@ -17,9 +17,7 @@ dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters
 
   const [trackId] = spotifyUrlEntity.params.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
 
-  const response = await spotifyManager.process([trackId]);
-
-  await msg.replyText(response);
+  await spotifyManager.process([trackId], msg.chat.id);
 });
 
 dispatcher.onNewMessage(
@@ -50,9 +48,7 @@ dispatcher.onNewMessage(
 
     if (!trackListIds.length) return;
 
-    const response = await spotifyManager.process([...new Set(trackListIds)]);
-
-    await msg.replyText(response);
+    await spotifyManager.process([...new Set(trackListIds)], msg.chat.id);
   },
 );
 
