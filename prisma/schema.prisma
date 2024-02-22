@@ -9,15 +9,15 @@ datasource db {
 
 model Playlist {
   id         String @id @unique
-  snapshotId String
+  snapshotId String @map("snapshot_id")
 
   @@map("playlists")
 }
 
 model Track {
   id      String    @id @default(cuid())
-  trackId String
-  addedAt DateTime? @default(now())
+  trackId String    @map("track_id")
+  addedAt DateTime? @default(now()) @map("added_at")
   name    String
 
   @@map("tracks")
@@ -25,8 +25,8 @@ model Track {
 
 model TrackQueue {
   id       String   @id @default(cuid())
-  trackUri String   @unique
-  addedAt  DateTime @default(now())
+  trackUri String   @unique @map("track_uri")
+  addedAt  DateTime @default(now()) @map("added_at")
 
   @@map("tracks_queue")
 }
