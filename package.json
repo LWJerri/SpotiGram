@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/LWJerri/SpotiGram#readme",
   "dependencies": {
-    "@mtcute/core": "^0.7.0",
+    "@mtcute/core": "^0.7.1",
     "@mtcute/crypto-node": "^0.7.0",
     "@mtcute/dispatcher": "^0.7.0",
     "@mtcute/node": "^0.7.0",
