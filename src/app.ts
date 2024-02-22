@@ -55,7 +55,7 @@ dispatcher.onNewMessage(
 client.run({ session: env.TG_SESSION }, async () => {
   if (env.SAVE_SESSION) return await saveSession();
 
-  await spotifyManager.syncDatabase();
+  await spotifyManager.synchronize();
 
   console.log("🚀 SpotiGram ready to use");
 });
