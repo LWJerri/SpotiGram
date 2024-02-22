@@ -1,3 +1,4 @@
+import { SpotifyError } from "@soundify/web-api";
 import { prisma } from "../helpers/prisma";
 import { SpotifyManager } from "../manager";
 
@@ -12,6 +13,8 @@ export async function processQueue(spotifyManager: SpotifyManager) {
 
       await prisma.trackQueue.delete({ where: { id } });
     } catch (err) {
+      if (err instanceof SpotifyError && err.status === 404) continue;
+
       console.error(err);
 
       continue;
