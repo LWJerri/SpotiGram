@@ -3,23 +3,19 @@ import { spawn } from "child_process";
 export default async function oAuthProcess() {
   let streamData = "";
 
-  try {
-    await new Promise((resolve, reject) => {
-      const child = spawn("pnpm", ["tsx", "./src/oAuth.ts"]);
+  await new Promise((resolve, reject) => {
+    spawn("pnpm", ["build"]);
 
-      child.stdout.on("data", (data) => {
-        streamData += data.toString();
-      });
+    const child = spawn("node", ["./dist/oAuth.js"]);
 
-      child.on("exit", () => resolve(child));
-
-      child.on("error", (error) => reject(error));
+    child.stdout.on("data", (data) => {
+      streamData += data.toString();
     });
 
-    return streamData;
-  } catch (err) {
-    console.error("Can't run oAuth process.", err);
+    child.on("exit", () => resolve(child));
 
-    return null;
-  }
+    child.on("error", (error) => reject(error));
+  });
+
+  return streamData;
 }

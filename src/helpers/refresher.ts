@@ -1,6 +1,6 @@
-import { RefreshTokenResponse } from "../interfaces";
-import basicAuthHeader from "./basicAuthHeader";
-import { env } from "./env";
+import { RefreshTokenResponse } from "../interfaces/index.js";
+import basicAuthHeader from "./basicAuthHeader.js";
+import { env } from "./env.js";
 
 export default async function refresher(): Promise<string> {
   const request = await fetch("https://accounts.spotify.com/api/token", {

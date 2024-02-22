@@ -1,7 +1,12 @@
-import { bool, customCleanEnv, num, str, url } from "envalid";
-import { alphanum } from "../validators";
-import childProcess from "./oAuthProcess";
-import updateEnv from "./updateEnv";
+import { bool, customCleanEnv, makeValidator, num, str, url } from "envalid";
+import childProcess from "./oAuthProcess.js";
+import updateEnv from "./updateEnv.js";
+
+const alphanum = makeValidator((value) => {
+  if (typeof value !== "string" || !value.length) throw new Error("Value must be a non-empty string");
+
+  return value;
+});
 
 export const env = await customCleanEnv(
   process.env,
@@ -10,7 +15,6 @@ export const env = await customCleanEnv(
     TG_API_HASH: alphanum(),
     SAVE_SESSION: bool(),
     TG_SESSION: str(),
-    IS_SPOTIFY_PREMIUM: bool(),
     SPOTIFY_CLIENT_ID: alphanum(),
     SPOTIFY_CLIENT_SECRET: alphanum(),
     SPOTIFY_REFRESH_TOKEN: str(),
@@ -22,13 +26,15 @@ export const env = await customCleanEnv(
     const SPOTIFY_TOKEN_KEY: keyof typeof env = "SPOTIFY_REFRESH_TOKEN";
 
     if (!env[SPOTIFY_TOKEN_KEY]) {
-      const refreshToken = await childProcess();
+      try {
+        const token = await childProcess();
 
-      if (!refreshToken) throw new Error("Can't retrieve first refresh token");
+        await updateEnv(SPOTIFY_TOKEN_KEY, token);
 
-      await updateEnv(SPOTIFY_TOKEN_KEY, refreshToken);
-
-      Object.assign(env, { SPOTIFY_TOKEN_KEY: refreshToken });
+        Object.assign(env, { SPOTIFY_REFRESH_TOKEN: token });
+      } catch (err) {
+        throw err;
+      }
     }
 
     return env;
