@@ -1,28 +1,93 @@
+import { tl } from "@mtcute/core";
 import { UpdateState, filters } from "@mtcute/dispatcher";
+import { PrismaClient } from "@prisma/client/extension";
+import { SpotifyError } from "@soundify/web-api";
 import "dotenv/config";
 import { schedule } from "node-cron";
-import { odesli, urlLinks } from "./dispatchers/index.js";
-import { isHaveUrlEntities, isViaOdesliBot } from "./filters/index.js";
-import { env } from "./helpers/env.js";
-import saveSession from "./helpers/saveSession.js";
-import { SpotifyManager } from "./manager.js";
-import { client, dispatcher } from "./mtcute/index.js";
-import { processQueue } from "./schedulers/index.js";
+import { env } from "./config/env.js";
+import { isIncludesUrlEntities, isSpotifyUrl, isViaOdesliBot } from "./filters/index.js";
+import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants.js";
+import { SpotifyManager } from "./spotify/manager.js";
+import { dispatcher, telegram } from "./telegram/index.js";
+import inlineCall from "./telegram/inlineCall.js";
+import saveSession from "./telegram/saveSession.js";
 
-const spotifyManager = new SpotifyManager();
+export const prisma = new PrismaClient();
+
+dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
+  const spotifyUrlEntity = msg.entities.find(({ params }) => params.kind === "text_link" && isSpotifyUrl(params.url));
+
+  if (!spotifyUrlEntity || !spotifyUrlEntity.is("text_link")) return;
+
+  const [trackId] = spotifyUrlEntity.params.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
+
+  await new SpotifyManager().process([trackId], msg.chat.id);
+});
 
 dispatcher.onNewMessage(
-  filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot),
-  async (msg) => await odesli(msg),
+  filters.and(filters.chat("private"), filters.not(filters.me), isIncludesUrlEntities),
+  async (msg, state: UpdateState<{}>) => {
+    const urlEntitiesList = msg.entities.filter((entity) => entity.kind === "url");
+
+    const trackListIds = new Set<string>();
+
+    for (const entity of urlEntitiesList) {
+      await state.throttle("inlineCallsCycle", 5, 10);
+
+      let inlineCallResult: tl.messages.RawBotResults;
+
+      try {
+        inlineCallResult = await inlineCall(entity.text, ODESLI_BOT_ID);
+      } catch (err) {
+        console.error(err);
+
+        continue;
+      }
+
+      const inlineResult = inlineCallResult?.results.pop();
+
+      if (inlineResult?.sendMessage._ !== "botInlineMessageText" || !inlineResult.sendMessage.entities?.length) {
+        continue;
+      }
+
+      const spotifyEntity = inlineResult.sendMessage.entities.find((entity) => {
+        return entity._ === "messageEntityTextUrl" && isSpotifyUrl(entity.url);
+      });
+
+      if (spotifyEntity?._ !== "messageEntityTextUrl") continue;
+
+      const matchResult = spotifyEntity.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
+
+      if (!matchResult) continue;
+
+      trackListIds.add(matchResult[0]);
+    }
+
+    if (!trackListIds.size) return;
+
+    await new SpotifyManager().process([...trackListIds], msg.chat.id);
+  },
 );
 
-dispatcher.onNewMessage(
-  filters.and(filters.chat("private"), filters.not(filters.me), isHaveUrlEntities),
-  async (msg, state: UpdateState<{}>) => await urlLinks(msg, state),
-);
+schedule("0 * * * *", async () => await new SpotifyManager().synchronize());
 
-schedule("0 * * * *", async () => await spotifyManager.synchronize());
-schedule("*/5 * * * *", async () => await processQueue(spotifyManager));
+schedule("*/5 * * * *", async () => {
+  const queueTrackList = await prisma.trackQueue.findMany();
+
+  for (const track of queueTrackList) {
+    try {
+      await new SpotifyManager().addQueuedTrack(track.trackUri);
+
+      await prisma.trackQueue.delete({ where: { id: track.id } });
+    } catch (err) {
+      if (err instanceof SpotifyError && err.status === 404) continue;
+
+      console.error(err);
+
+      continue;
+    }
+  }
+});
 
 if (env.SAVE_SESSION) {
   try {
@@ -32,9 +97,9 @@ if (env.SAVE_SESSION) {
   }
 }
 
-await spotifyManager.synchronize();
+telegram.run({ session: env.TG_SESSION }, async () => {
+  await new SpotifyManager().synchronize();
 
-client.run({ session: env.TG_SESSION }, async () => {
   console.log("🚀 SpotiGram ready to use");
 });
 

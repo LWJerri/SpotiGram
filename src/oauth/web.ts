@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import Fastify from "fastify";
 import open from "open";
 import { exit, stdout } from "process";
-import basicAuthHeader from "./helpers/basicAuthHeader.js";
+import authHeader from "../helpers/authHeader.js";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } = process.env;
 
@@ -48,7 +48,7 @@ app.get<{
         grant_type: "authorization_code",
       }),
       headers: {
-        Authorization: basicAuthHeader(SPOTIFY_CLIENT_ID!, SPOTIFY_CLIENT_SECRET!),
+        Authorization: authHeader(SPOTIFY_CLIENT_ID!, SPOTIFY_CLIENT_SECRET!),
       },
     });
 

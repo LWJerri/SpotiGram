@@ -3,7 +3,6 @@
     "outDir": "./dist/",
     "target": "ESNext",
     "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "inlineSourceMap": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,

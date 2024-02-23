@@ -1,11 +1,11 @@
-import { client } from "../mtcute/index.js";
-import { env } from "./env.js";
-import updateEnv from "./updateEnv.js";
+import { env } from "../config/env.js";
+import updateEnv from "../config/update.js";
+import { telegram } from "./telegram.js";
 
 export default async function saveSession() {
   const SESSION_KEY: keyof typeof env = "TG_SESSION";
 
-  const sessionString = await client.exportSession();
+  const sessionString = await telegram.exportSession();
 
   if (env[SESSION_KEY] === sessionString) return;
 

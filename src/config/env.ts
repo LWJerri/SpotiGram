@@ -1,6 +1,6 @@
 import { bool, customCleanEnv, makeValidator, num, str, url } from "envalid";
-import childProcess from "./oAuthProcess.js";
-import updateEnv from "./updateEnv.js";
+import childProcess from "../oauth/process.js";
+import updateEnv from "./update.js";
 
 const alphanum = makeValidator((value) => {
   if (typeof value !== "string" || !value.length) throw new Error("Value must be a non-empty string");

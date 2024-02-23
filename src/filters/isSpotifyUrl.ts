@@ -1,3 +1,1 @@
-import { SPOTIFY_URL_REGEXP } from "../helpers/constants.js";
-
-export const isSpotifyUrl = (url: string) => SPOTIFY_URL_REGEXP.test(url);
+export const isSpotifyUrl = (url: string) => /https?:\/\/open.spotify.com\/(track)\/[a-zA-Z0-9]+/.test(url);

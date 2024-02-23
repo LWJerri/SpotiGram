@@ -13,11 +13,14 @@ import {
 } from "@soundify/web-api";
 import { PageIterator } from "@soundify/web-api/pagination";
 import { randomUUID } from "crypto";
-import { SPECIAL_EMPTY_SYMBOL } from "./helpers/constants.js";
-import { env } from "./helpers/env.js";
-import { prisma } from "./helpers/prisma.js";
-import refresher from "./helpers/refresher.js";
-import { client } from "./mtcute/index.js";
+import { EOL } from "os";
+import { refresher } from "./refresher.js";
+
+import { prisma } from "../app.js";
+import { env } from "../config/env.js";
+import { telegram } from "../telegram/telegram.js";
+
+const SPECIAL_EMPTY_SYMBOL = "⠀";
 
 export class SpotifyManager {
   private spotify = new SpotifyClient(randomUUID(), { waitForRateLimit: true, refresher });
@@ -59,7 +62,7 @@ export class SpotifyManager {
   }
 
   async process(trackIds: string[], chatId: string | number) {
-    const message = await client.sendText(chatId, md(this.response.join("\n")));
+    const message = await telegram.sendText(chatId, md(this.response.join(EOL)));
 
     for (const trackId of trackIds) {
       const [track, isTrackAlreadyInQueue, isClientPremium] = await Promise.all([
@@ -88,12 +91,12 @@ export class SpotifyManager {
 
       this.response.push(SPECIAL_EMPTY_SYMBOL);
 
-      await client.editMessage({ message, text: md(this.response.join("\n")) });
+      await telegram.editMessage({ message, text: md(this.response.join(EOL)) });
     }
 
     this.response.push(`◽ open.spotify.com/playlist/${env.SPOTIFY_PLAYLIST_ID}`);
 
-    return await client.editMessage({ message, text: md(this.response.join("\n")) });
+    return await telegram.editMessage({ message, text: md(this.response.join(EOL)) });
   }
 
   private async isClientPremium() {
