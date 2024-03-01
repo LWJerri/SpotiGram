@@ -1,6 +1,6 @@
 import { Dispatcher, MemoryStateStorage } from "@mtcute/dispatcher";
-import { telegram } from "./telegram.js";
+import { client } from "./index.js";
 
-export const dispatcher = Dispatcher.for(telegram, {
+export const dispatcher = Dispatcher.for(client, {
   storage: new MemoryStateStorage(),
 });

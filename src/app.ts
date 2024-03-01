@@ -1,21 +1,20 @@
 import { tl } from "@mtcute/core";
 import { UpdateState, filters } from "@mtcute/dispatcher";
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from "@prisma/client";
 import { SpotifyError } from "@soundify/web-api";
-import "dotenv/config";
 import { schedule } from "node-cron";
-import { env } from "./config/env.js";
-import { isIncludesUrlEntities, isSpotifyUrl, isViaOdesliBot } from "./filters/index.js";
-import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants.js";
-import { SpotifyManager } from "./spotify/manager.js";
-import { dispatcher, telegram } from "./telegram/index.js";
-import inlineCall from "./telegram/inlineCall.js";
-import saveSession from "./telegram/saveSession.js";
+import { environment } from "./config/index.js";
+import { isHasSpotifyUrl, isHasUrlEntities, isViaOdesliBot } from "./filters/index.js";
+import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/index.js";
+import { SpotifyManager } from "./spotify/index.js";
+import { client, dispatcher, inlineAct, session } from "./telegram/index.js";
 
 export const prisma = new PrismaClient();
 
 dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
-  const spotifyUrlEntity = msg.entities.find(({ params }) => params.kind === "text_link" && isSpotifyUrl(params.url));
+  const spotifyUrlEntity = msg.entities.find(
+    ({ params }) => params.kind === "text_link" && isHasSpotifyUrl(params.url),
+  );
 
   if (!spotifyUrlEntity || !spotifyUrlEntity.is("text_link")) return;
 
@@ -25,7 +24,7 @@ dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters
 });
 
 dispatcher.onNewMessage(
-  filters.and(filters.chat("private"), filters.not(filters.me), isIncludesUrlEntities),
+  filters.and(filters.chat("private"), filters.not(filters.me), isHasUrlEntities),
   async (msg, state: UpdateState<{}>) => {
     const urlEntitiesList = msg.entities.filter((entity) => entity.kind === "url");
 
@@ -37,7 +36,7 @@ dispatcher.onNewMessage(
       let inlineCallResult: tl.messages.RawBotResults;
 
       try {
-        inlineCallResult = await inlineCall(entity.text, ODESLI_BOT_ID);
+        inlineCallResult = await inlineAct(entity.text, ODESLI_BOT_ID);
       } catch (err) {
         console.error(err);
 
@@ -51,7 +50,7 @@ dispatcher.onNewMessage(
       }
 
       const spotifyEntity = inlineResult.sendMessage.entities.find((entity) => {
-        return entity._ === "messageEntityTextUrl" && isSpotifyUrl(entity.url);
+        return entity._ === "messageEntityTextUrl" && isHasSpotifyUrl(entity.url);
       });
 
       if (spotifyEntity?._ !== "messageEntityTextUrl") continue;
@@ -89,21 +88,21 @@ schedule("*/5 * * * *", async () => {
   }
 });
 
-if (env.SAVE_SESSION) {
+if (environment.SAVE_SESSION) {
   try {
-    await saveSession();
+    await session();
   } catch (err) {
     console.error("Can't save session string.", err);
   }
 }
 
-telegram.run({ session: env.TG_SESSION }, async () => {
+client.run({ session: environment.TG_SESSION }, async () => {
   await new SpotifyManager().synchronize();
 
   console.log("🚀 SpotiGram ready to use");
 });
 
-dispatcher.onError(async (error, update, state) => {
+dispatcher.onError(async (error, update) => {
   console.error("⚠️ Dispatcher error:", error, update.data);
 
   return true;

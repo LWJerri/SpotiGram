@@ -14,11 +14,10 @@ import {
 import { PageIterator } from "@soundify/web-api/pagination";
 import { randomUUID } from "crypto";
 import { EOL } from "os";
-import { refresher } from "./refresher.js";
-
 import { prisma } from "../app.js";
-import { env } from "../config/env.js";
-import { telegram } from "../telegram/telegram.js";
+import { environment } from "../config/index.js";
+import { client } from "../telegram/index.js";
+import { refresher } from "./index.js";
 
 const SPECIAL_EMPTY_SYMBOL = "⠀";
 
@@ -28,14 +27,14 @@ export class SpotifyManager {
 
   async synchronize() {
     const [databasePlaylist, spotifyPlaylist] = await Promise.all([
-      prisma.playlist.findUnique({ where: { id: env.SPOTIFY_PLAYLIST_ID } }),
-      getPlaylist(this.spotify, env.SPOTIFY_PLAYLIST_ID),
+      prisma.playlist.findUnique({ where: { id: environment.SPOTIFY_PLAYLIST_ID } }),
+      getPlaylist(this.spotify, environment.SPOTIFY_PLAYLIST_ID),
     ]);
 
     if (databasePlaylist?.snapshotId === spotifyPlaylist?.snapshot_id) return;
 
     const playlistTracksIterator = new PageIterator((offset) =>
-      getPlaylistTracks(this.spotify, env.SPOTIFY_PLAYLIST_ID, { limit: 50, offset }),
+      getPlaylistTracks(this.spotify, environment.SPOTIFY_PLAYLIST_ID, { limit: 50, offset }),
     );
 
     const playlistTracksList = await playlistTracksIterator.collect();
@@ -48,8 +47,8 @@ export class SpotifyManager {
 
     await prisma.$transaction([
       prisma.playlist.upsert({
-        where: { id: env.SPOTIFY_PLAYLIST_ID },
-        create: { id: env.SPOTIFY_PLAYLIST_ID, snapshotId },
+        where: { id: environment.SPOTIFY_PLAYLIST_ID },
+        create: { id: environment.SPOTIFY_PLAYLIST_ID, snapshotId },
         update: { snapshotId },
       }),
       prisma.track.deleteMany(),
@@ -62,7 +61,7 @@ export class SpotifyManager {
   }
 
   async process(trackIds: string[], chatId: string | number) {
-    const message = await telegram.sendText(chatId, md(this.response.join(EOL)));
+    const message = await client.sendText(chatId, md(this.response.join(EOL)));
 
     for (const trackId of trackIds) {
       const [track, isTrackAlreadyInQueue, isClientPremium] = await Promise.all([
@@ -91,12 +90,12 @@ export class SpotifyManager {
 
       this.response.push(SPECIAL_EMPTY_SYMBOL);
 
-      await telegram.editMessage({ message, text: md(this.response.join(EOL)) });
+      await client.editMessage({ message, text: md(this.response.join(EOL)) });
     }
 
-    this.response.push(`◽ open.spotify.com/playlist/${env.SPOTIFY_PLAYLIST_ID}`);
+    this.response.push(`◽ open.spotify.com/playlist/${environment.SPOTIFY_PLAYLIST_ID}`);
 
-    return await telegram.editMessage({ message, text: md(this.response.join(EOL)) });
+    return await client.editMessage({ message, text: md(this.response.join(EOL)) });
   }
 
   private async isClientPremium() {
@@ -149,12 +148,12 @@ export class SpotifyManager {
     try {
       const { snapshot_id: snapshotId } = await addItemToPlaylist(
         this.spotify,
-        env.SPOTIFY_PLAYLIST_ID,
+        environment.SPOTIFY_PLAYLIST_ID,
         `spotify:track:${trackId}`,
       );
 
       await prisma.$transaction([
-        prisma.playlist.update({ where: { id: env.SPOTIFY_PLAYLIST_ID }, data: { snapshotId } }),
+        prisma.playlist.update({ where: { id: environment.SPOTIFY_PLAYLIST_ID }, data: { snapshotId } }),
         prisma.track.create({ data: { trackId, name } }),
       ]);
 

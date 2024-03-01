@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 
-export default async function oAuthProcess() {
+export async function oauth() {
   let streamData = "";
 
   await new Promise((resolve, reject) => {

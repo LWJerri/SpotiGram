@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
-import Fastify from "fastify";
+import fastify from "fastify";
 import open from "open";
 import { exit, stdout } from "process";
-import authHeader from "../helpers/authHeader.js";
+import { header } from "../spotify/index.js";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } = process.env;
 
@@ -22,7 +22,7 @@ const openUrlQuery = new URLSearchParams({
   state: randomUUID(),
 });
 
-const app = Fastify();
+const app = fastify();
 
 app.get<{
   Querystring?: { code?: string; state?: string; error?: string };
@@ -48,7 +48,7 @@ app.get<{
         grant_type: "authorization_code",
       }),
       headers: {
-        Authorization: authHeader(SPOTIFY_CLIENT_ID!, SPOTIFY_CLIENT_SECRET!),
+        Authorization: header(SPOTIFY_CLIENT_ID!, SPOTIFY_CLIENT_SECRET!),
       },
     });
 
@@ -63,8 +63,6 @@ app.get<{
     stdout.write(refresh_token);
 
     await res.send("You can close window, token saved to .env file.");
-
-    exit(0);
   } catch (err) {
     console.error("Can't finish request to Spotify", err);
 
