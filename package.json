@@ -26,25 +26,25 @@
   },
   "homepage": "https://github.com/LWJerri/SpotiGram#readme",
   "dependencies": {
-    "@mtcute/core": "^0.7.2",
-    "@mtcute/crypto-node": "^0.7.0",
-    "@mtcute/dispatcher": "^0.7.0",
-    "@mtcute/node": "^0.7.0",
-    "@prisma/client": "^5.9.1",
+    "@mtcute/core": "0.7.3",
+    "@mtcute/crypto-node": "0.7.0",
+    "@mtcute/dispatcher": "0.7.0",
+    "@mtcute/node": "0.7.0",
+    "@prisma/client": "5.10.2",
     "@soundify/web-api": "1.0.0",
-    "dotenv": "^16.4.2",
-    "envalid": "^8.0.0",
-    "fastify": "^4.26.1",
-    "node-cron": "^3.0.3",
-    "postgres": "^3.4.3"
+    "dotenv": "16.4.5",
+    "envalid": "8.0.0",
+    "fastify": "4.26.1",
+    "node-cron": "3.0.3",
+    "postgres": "3.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.11.16",
-    "@types/node-cron": "^3.0.11",
-    "open": "^10.0.3",
-    "prettier": "^3.2.5",
-    "prisma": "^5.9.1",
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "@types/node": "20.11.24",
+    "@types/node-cron": "3.0.11",
+    "open": "10.0.4",
+    "prettier": "3.2.5",
+    "prisma": "5.10.2",
+    "tsx": "4.7.1",
+    "typescript": "5.3.3"
   }
 }
