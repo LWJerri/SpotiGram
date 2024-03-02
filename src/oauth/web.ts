@@ -63,6 +63,8 @@ app.get<{
     stdout.write(refresh_token);
 
     await res.send("You can close window, token saved to .env file.");
+
+    exit(0);
   } catch (err) {
     console.error("Can't finish request to Spotify", err);
 
