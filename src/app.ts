@@ -2,6 +2,7 @@ import { tl } from "@mtcute/core";
 import { UpdateState, filters } from "@mtcute/dispatcher";
 import { PrismaClient } from "@prisma/client";
 import { SpotifyError } from "@soundify/web-api";
+import "dotenv/config";
 import { schedule } from "node-cron";
 import { environment } from "./config/index.js";
 import { isHasSpotifyUrl, isHasUrlEntities, isViaOdesliBot } from "./filters/index.js";
@@ -88,15 +89,11 @@ schedule("*/5 * * * *", async () => {
   }
 });
 
-if (environment.SAVE_SESSION) {
-  try {
-    await session();
-  } catch (err) {
-    console.error("Can't save session string.", err);
-  }
-}
-
 client.run({ session: environment.TG_SESSION }, async () => {
+  if (environment.SAVE_SESSION) {
+    await session();
+  }
+
   await new SpotifyManager().synchronize();
 
   console.log("🚀 SpotiGram ready to use");
