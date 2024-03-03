@@ -16,14 +16,13 @@ import { randomUUID } from "crypto";
 import { EOL } from "os";
 import { environment } from "../config/environment.js";
 import { prisma } from "../db/prisma.js";
+import { packageJson } from "../helpers/constants.js";
 import { client } from "../telegram/index.js";
 import { refresher } from "./refresher.js";
 
-const SPECIAL_EMPTY_SYMBOL = "⠀";
-
 export class SpotifyManager {
   private spotify = new SpotifyClient(randomUUID(), { waitForRateLimit: true, refresher });
-  private readonly initialResponse = ["**SpotiGram ⭐**", SPECIAL_EMPTY_SYMBOL];
+  private readonly initialResponse = [`**SpotiGram 💖** is [open-source](${packageJson.homepage}) 💪`, "│"];
   private response = this.initialResponse;
 
   async synchronize() {
@@ -73,16 +72,16 @@ export class SpotifyManager {
         this.isClientPremium(),
       ]);
 
-      this.response.push(`**${track.name}**`);
+      this.response.push(` ├ **${track.name}**`);
 
       if (!track.existsInDatabase) {
         await this.addTrackToPlaylist(trackId, track.name);
       } else {
-        this.response.push(` ▹ already in playlist.`);
+        this.response.push(` │ ├ already in playlist.`);
       }
 
       if (isTrackAlreadyInQueue) {
-        this.response.push(` ▹ already in queue.`);
+        this.response.push(` │ └ already in queue.`);
       }
 
       if (isClientPremium && !isTrackAlreadyInQueue) {
@@ -91,12 +90,12 @@ export class SpotifyManager {
         await this.addTrackToQueue(trackUri);
       }
 
-      this.response.push(SPECIAL_EMPTY_SYMBOL);
+      this.response.push("│");
 
       await client.editMessage({ message, text: md(this.response.join(EOL)) });
     }
 
-    this.response.push(`◽ open.spotify.com/playlist/${environment.SPOTIFY_PLAYLIST_ID}`);
+    this.response.push(`└ open.spotify.com/playlist/${environment.SPOTIFY_PLAYLIST_ID}`);
 
     return await client.editMessage({ message, text: md(this.response.join(EOL)) });
   }
@@ -133,16 +132,16 @@ export class SpotifyManager {
     try {
       await addItemToPlaybackQueue(this.spotify, trackUri);
 
-      this.response.push(" ▹ added to queue.");
+      this.response.push(" │ └ added to queue.");
     } catch (err) {
       if (err instanceof SpotifyError && err.status === 404) {
         await prisma.trackQueue.upsert({ where: { trackUri }, create: { trackUri }, update: {} });
 
-        this.response.push(" ▹ added to queue and will be played when some device will be available.");
+        this.response.push(" │ └ added to queue and will be played when some device will be available.");
       } else {
         console.error(err);
 
-        this.response.push(" ▹ some error happens when adding track to queue.");
+        this.response.push(" │ └ some error happens when adding track to queue.");
       }
     }
   }
@@ -160,11 +159,11 @@ export class SpotifyManager {
         prisma.track.create({ data: { trackId, name } }),
       ]);
 
-      this.response.push(" ▹ added to playlist.");
+      this.response.push(" │ ├ added to playlist.");
     } catch (err) {
       console.error(err);
 
-      this.response.push(" ▹ some error happens when adding track to playlist.");
+      this.response.push(" │ ├ some error happens when adding track to playlist.");
     }
   }
 }
