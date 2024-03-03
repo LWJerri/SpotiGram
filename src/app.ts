@@ -6,9 +6,11 @@ import { schedule } from "node-cron";
 import { environment } from "./config/environment.js";
 import { prisma } from "./db/prisma.js";
 import { isHasSpotifyUrl, isHasUrlEntities, isViaOdesliBot } from "./filters/index.js";
-import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants.js";
+import { ODESLI_BOT_USERNAME, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants.js";
 import { SpotifyManager } from "./spotify/manager.js";
 import { client, dispatcher, inlineAct, session } from "./telegram/index.js";
+
+const spotifyManager = new SpotifyManager();
 
 dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
   const spotifyUrlEntity = msg.entities.find(
@@ -19,7 +21,7 @@ dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters
 
   const [trackId] = spotifyUrlEntity.params.url.match(SPOTIFY_TRACK_ID_REGEXP)!;
 
-  await new SpotifyManager().process([trackId], msg.chat.id);
+  await spotifyManager.process([trackId], msg.chat.id);
 });
 
 dispatcher.onNewMessage(
@@ -35,7 +37,7 @@ dispatcher.onNewMessage(
       let inlineCallResult: tl.messages.RawBotResults;
 
       try {
-        inlineCallResult = await inlineAct(entity.text, ODESLI_BOT_ID);
+        inlineCallResult = await inlineAct(entity.text, ODESLI_BOT_USERNAME);
       } catch (err) {
         console.error(err);
 
@@ -63,18 +65,18 @@ dispatcher.onNewMessage(
 
     if (!trackListIds.size) return;
 
-    await new SpotifyManager().process([...trackListIds], msg.chat.id);
+    await spotifyManager.process([...trackListIds], msg.chat.id);
   },
 );
 
-schedule("0 * * * *", async () => await new SpotifyManager().synchronize());
+schedule("0 * * * *", async () => await spotifyManager.synchronize());
 
 schedule("*/5 * * * *", async () => {
   const queueTrackList = await prisma.trackQueue.findMany();
 
   for (const track of queueTrackList) {
     try {
-      await new SpotifyManager().addQueuedTrack(track.trackUri);
+      await spotifyManager.addQueuedTrack(track.trackUri);
 
       await prisma.trackQueue.delete({ where: { id: track.id } });
     } catch (err) {
@@ -92,7 +94,7 @@ client.run({ session: environment.TG_SESSION }, async () => {
     await session();
   }
 
-  await new SpotifyManager().synchronize();
+  await spotifyManager.synchronize();
 
   console.log("🚀 SpotiGram ready to use");
 });
