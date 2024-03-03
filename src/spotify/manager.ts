@@ -85,7 +85,7 @@ export class SpotifyManager {
         this.response.push(` ▹ already in queue.`);
       }
 
-      if (isClientPremium) {
+      if (isClientPremium && !isTrackAlreadyInQueue) {
         const trackUri = `spotify:track:${trackId}`;
 
         await this.addTrackToQueue(trackUri);
