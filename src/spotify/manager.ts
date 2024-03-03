@@ -23,7 +23,8 @@ const SPECIAL_EMPTY_SYMBOL = "⠀";
 
 export class SpotifyManager {
   private spotify = new SpotifyClient(randomUUID(), { waitForRateLimit: true, refresher });
-  private response = ["**SpotiGram ⭐**", SPECIAL_EMPTY_SYMBOL];
+  private readonly initialResponse = ["**SpotiGram ⭐**", SPECIAL_EMPTY_SYMBOL];
+  private response = this.initialResponse;
 
   async synchronize() {
     const [databasePlaylist, spotifyPlaylist] = await Promise.all([
@@ -61,6 +62,8 @@ export class SpotifyManager {
   }
 
   async process(trackIds: string[], chatId: string | number) {
+    this.response = [...this.initialResponse];
+
     const message = await client.sendText(chatId, md(this.response.join(EOL)));
 
     for (const trackId of trackIds) {
