@@ -1,5 +1,5 @@
-import { environment } from "../config/index.js";
-import { header } from "./index.js";
+import { environment } from "../config/environment.js";
+import { header } from "./header.js";
 
 export async function refresher() {
   {

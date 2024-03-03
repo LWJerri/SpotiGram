@@ -1,10 +1,9 @@
 import { spawn } from "child_process";
-import { environment } from "../config/index.js";
 
-export async function oauth() {
+export async function oauth(isDev: boolean) {
   const data: { cmd: string; args: string[] } = {
-    cmd: environment.isDev ? "tsx" : "node",
-    args: environment.isDev ? ["./src/oauth/web.ts"] : ["./dist/oauth/web.js"],
+    cmd: isDev ? "tsx" : "node",
+    args: isDev ? ["./src/oauth/web.ts"] : ["./dist/oauth/web.js"],
   };
 
   let streamData = "";

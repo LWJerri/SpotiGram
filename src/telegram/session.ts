@@ -1,5 +1,6 @@
-import { environment, update } from "../config/index.js";
-import { client } from "./index.js";
+import { environment } from "../config/environment.js";
+import { update } from "../config/update.js";
+import { client } from "./client.js";
 
 export async function session() {
   const SESSION_KEY: keyof typeof environment = "TG_SESSION";

@@ -1,16 +1,14 @@
 import { tl } from "@mtcute/core";
 import { UpdateState, filters } from "@mtcute/dispatcher";
-import { PrismaClient } from "@prisma/client";
 import { SpotifyError } from "@soundify/web-api";
 import "dotenv/config";
 import { schedule } from "node-cron";
-import { environment } from "./config/index.js";
+import { environment } from "./config/environment.js";
+import { prisma } from "./db/prisma.js";
 import { isHasSpotifyUrl, isHasUrlEntities, isViaOdesliBot } from "./filters/index.js";
-import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/index.js";
-import { SpotifyManager } from "./spotify/index.js";
+import { ODESLI_BOT_ID, SPOTIFY_TRACK_ID_REGEXP } from "./helpers/constants.js";
+import { SpotifyManager } from "./spotify/manager.js";
 import { client, dispatcher, inlineAct, session } from "./telegram/index.js";
-
-export const prisma = new PrismaClient();
 
 dispatcher.onNewMessage(filters.and(filters.chat("private"), filters.not(filters.me), isViaOdesliBot), async (msg) => {
   const spotifyUrlEntity = msg.entities.find(

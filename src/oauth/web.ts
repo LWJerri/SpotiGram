@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import fastify from "fastify";
 import open from "open";
 import { exit, stdout } from "process";
-import { header } from "../spotify/index.js";
+import { header } from "../spotify/header.js";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } = process.env;
 

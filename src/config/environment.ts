@@ -1,6 +1,7 @@
 import { bool, customCleanEnv, num, str, url } from "envalid";
-import { oauth } from "../oauth/index.js";
-import { alphanum, update } from "./index.js";
+import { oauth } from "../oauth/oauth.js";
+import { alphanum } from "./filters/alphanum.js";
+import { update } from "./update.js";
 
 export const environment = await customCleanEnv(
   process.env,
@@ -21,7 +22,7 @@ export const environment = await customCleanEnv(
 
     if (!environment[SPOTIFY_TOKEN_KEY]) {
       try {
-        const token = await oauth();
+        const token = await oauth(environment.isDev);
 
         await update(SPOTIFY_TOKEN_KEY, token);
 

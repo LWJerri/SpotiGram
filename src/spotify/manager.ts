@@ -14,10 +14,10 @@ import {
 import { PageIterator } from "@soundify/web-api/pagination";
 import { randomUUID } from "crypto";
 import { EOL } from "os";
-import { prisma } from "../app.js";
-import { environment } from "../config/index.js";
+import { environment } from "../config/environment.js";
+import { prisma } from "../db/prisma.js";
 import { client } from "../telegram/index.js";
-import { refresher } from "./index.js";
+import { refresher } from "./refresher.js";
 
 const SPECIAL_EMPTY_SYMBOL = "⠀";
 
