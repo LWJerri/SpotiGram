@@ -34,7 +34,7 @@
     "@soundify/web-api": "1.0.0",
     "dotenv": "16.4.5",
     "envalid": "8.0.0",
-    "fastify": "4.26.1",
+    "fastify": "4.26.2",
     "node-cron": "3.0.3",
     "postgres": "3.4.3"
   },
@@ -45,7 +45,7 @@
     "prettier": "3.2.5",
     "prisma": "5.10.2",
     "tsx": "4.7.1",
-    "type-fest": "4.10.3",
+    "type-fest": "4.11.1",
     "typescript": "5.3.3"
   }
 }
